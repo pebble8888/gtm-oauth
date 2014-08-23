@@ -103,9 +103,9 @@ static NSString *const kUserEmailIsVerifiedKey    = @"isVerified";
 // consumer secret (private key)
 + (GTMOAuthAuthentication *)authForInstalledApp {
   // installed apps have fixed parameters
-  return [[[self alloc] initWithSignatureMethod:@"HMAC-SHA1"
+  return [[self alloc] initWithSignatureMethod:@"HMAC-SHA1"
                                     consumerKey:@"anonymous"
-                                     privateKey:@"anonymous"] autorelease];
+                                     privateKey:@"anonymous"];
 }
 
 // create an authentication object, specifying the consumer key and
@@ -132,13 +132,6 @@ static NSString *const kUserEmailIsVerifiedKey    = @"isVerified";
 }
 
 - (void)dealloc {
-  [paramValues_ release];
-  [realm_ release];
-  [privateKey_ release];
-  [timestamp_ release];
-  [nonce_ release];
-  [userData_ release];
-  [super dealloc];
 }
 
 #pragma mark -
@@ -248,8 +241,8 @@ static NSString *const kUserEmailIsVerifiedKey    = @"isVerified";
     if ([type hasPrefix:@"application/x-www-form-urlencoded"]) {
       NSData *data = [request HTTPBody];
       if ([data length] > 0) {
-        NSString *str = [[[NSString alloc] initWithData:data
-                                               encoding:NSUTF8StringEncoding] autorelease];
+        NSString *str = [[NSString alloc] initWithData:data
+                                               encoding:NSUTF8StringEncoding];
         if ([str length] > 0) {
           [[self class] addQueryString:str toParams:array];
         }
@@ -359,7 +352,7 @@ static NSString *const kUserEmailIsVerifiedKey    = @"isVerified";
   // NSURL's path method has an unfortunate side-effect of unescaping the path,
   // but CFURLCopyPath does not
   CFStringRef cfPath = CFURLCopyPath((CFURLRef)url);
-  NSString *path = [NSMakeCollectable(cfPath) autorelease];
+  NSString *path = (__bridge_transfer NSString*)cfPath;
   
   // include only non-standard ports for http or https
   NSString *portStr;
@@ -674,9 +667,10 @@ static NSString *const kUserEmailIsVerifiedKey    = @"isVerified";
   if (delegate && sel) {
     NSMethodSignature *sig = [delegate methodSignatureForSelector:sel];
     NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:sig];
+    [invocation retainArguments];
     [invocation setSelector:sel];
     [invocation setTarget:delegate];
-    [invocation setArgument:&self atIndex:2];
+    [invocation setArgument:(__bridge_retained void*)self atIndex:2];
     [invocation setArgument:&request atIndex:3];
     [invocation setArgument:&error atIndex:4];
     [invocation invoke];
@@ -754,7 +748,7 @@ static NSString *const kUserEmailIsVerifiedKey    = @"isVerified";
 }
 
 - (void)setScope:(NSString *)str {
-  [paramValues_ setValue:[[str copy] autorelease]
+  [paramValues_ setValue:[str copy]
                   forKey:kOAuthScopeKey];
 }
 
@@ -763,7 +757,7 @@ static NSString *const kUserEmailIsVerifiedKey    = @"isVerified";
 }
 
 - (void)setDisplayName:(NSString *)str {
-  [paramValues_ setValue:[[str copy] autorelease]
+  [paramValues_ setValue:[str copy]
                   forKey:kOAuthDisplayNameKey];
 }
 
@@ -772,7 +766,7 @@ static NSString *const kUserEmailIsVerifiedKey    = @"isVerified";
 }
 
 - (void)setHostedDomain:(NSString *)str {
-  [paramValues_ setValue:[[str copy] autorelease]
+  [paramValues_ setValue:[str copy]
                   forKey:kOAuthHostedDomainKey];
 }
 
@@ -781,7 +775,7 @@ static NSString *const kUserEmailIsVerifiedKey    = @"isVerified";
 }
 
 - (void)setDomain:(NSString *)str {
-  [paramValues_ setValue:[[str copy] autorelease]
+  [paramValues_ setValue:[str copy]
                   forKey:kOAuthDomainKey];
 }
 
@@ -790,7 +784,7 @@ static NSString *const kUserEmailIsVerifiedKey    = @"isVerified";
 }
 
 - (void)setIconURLString:(NSString *)str {
-  [paramValues_ setValue:[[str copy] autorelease]
+  [paramValues_ setValue:[str copy]
                   forKey:kOAuthIconURLKey];
 }
 
@@ -799,7 +793,7 @@ static NSString *const kUserEmailIsVerifiedKey    = @"isVerified";
 }
 
 - (void)setLanguage:(NSString *)str {
-  [paramValues_ setValue:[[str copy] autorelease]
+  [paramValues_ setValue:[str copy]
                   forKey:kOAuthLanguageKey];
 }
 
@@ -808,7 +802,7 @@ static NSString *const kUserEmailIsVerifiedKey    = @"isVerified";
 }
 
 - (void)setMobile:(NSString *)str {
-  [paramValues_ setValue:[[str copy] autorelease]
+  [paramValues_ setValue:[str copy]
                   forKey:kOAuthMobileKey];
 }
 
@@ -817,7 +811,7 @@ static NSString *const kUserEmailIsVerifiedKey    = @"isVerified";
 }
 
 - (void)setSignatureMethod:(NSString *)str {
-  [paramValues_ setValue:[[str copy] autorelease]
+  [paramValues_ setValue:[str copy]
                   forKey:kOAuthSignatureMethodKey];
 }
 
@@ -826,7 +820,7 @@ static NSString *const kUserEmailIsVerifiedKey    = @"isVerified";
 }
 
 - (void)setConsumerKey:(NSString *)str {
-  [paramValues_ setValue:[[str copy] autorelease]
+  [paramValues_ setValue:[str copy]
                   forKey:kOAuthConsumerKey];
 }
 
@@ -835,7 +829,7 @@ static NSString *const kUserEmailIsVerifiedKey    = @"isVerified";
 }
 
 - (void)setToken:(NSString *)str {
-  [paramValues_ setValue:[[str copy] autorelease]
+  [paramValues_ setValue:[str copy]
                   forKey:kOAuthTokenKey];
 }
 
@@ -845,7 +839,7 @@ static NSString *const kUserEmailIsVerifiedKey    = @"isVerified";
 
 
 - (void)setCallback:(NSString *)str {
-  [paramValues_ setValue:[[str copy] autorelease]
+  [paramValues_ setValue:[str copy]
                   forKey:kOAuthCallbackKey];
 }
 
@@ -854,7 +848,7 @@ static NSString *const kUserEmailIsVerifiedKey    = @"isVerified";
 }
 
 - (void)setVerifier:(NSString *)str {
-  [paramValues_ setValue:[[str copy] autorelease]
+  [paramValues_ setValue:[str copy]
                   forKey:kOAuthVerifierKey];
 }
 
@@ -863,7 +857,7 @@ static NSString *const kUserEmailIsVerifiedKey    = @"isVerified";
 }
 
 - (void)setServiceProvider:(NSString *)str {
-  [paramValues_ setValue:[[str copy] autorelease]
+  [paramValues_ setValue:[str copy]
                   forKey:kServiceProviderKey];
 }
 
@@ -872,7 +866,7 @@ static NSString *const kUserEmailIsVerifiedKey    = @"isVerified";
 }
 
 - (void)setUserEmail:(NSString *)str {
-  [paramValues_ setValue:[[str copy] autorelease]
+  [paramValues_ setValue:[str copy]
                   forKey:kUserEmailKey];
 }
 
@@ -881,7 +875,7 @@ static NSString *const kUserEmailIsVerifiedKey    = @"isVerified";
 }
 
 - (void)setUserEmailIsVerified:(NSString *)str {
-  [paramValues_ setValue:[[str copy] autorelease]
+  [paramValues_ setValue:[str copy]
                   forKey:kUserEmailIsVerifiedKey];
 }
 
@@ -890,7 +884,7 @@ static NSString *const kUserEmailIsVerifiedKey    = @"isVerified";
 }
 
 - (void)setTokenSecret:(NSString *)str {
-  [paramValues_ setValue:[[str copy] autorelease]
+  [paramValues_ setValue:[str copy]
                   forKey:kOAuthTokenSecretKey];
 }
 
@@ -899,7 +893,7 @@ static NSString *const kUserEmailIsVerifiedKey    = @"isVerified";
 }
 
 - (void)setCallbackConfirmed:(NSString *)str {
-  [paramValues_ setValue:[[str copy] autorelease]
+  [paramValues_ setValue:[str copy]
                   forKey:kOAuthCallbackConfirmedKey];
 }
 
@@ -908,7 +902,7 @@ static NSString *const kUserEmailIsVerifiedKey    = @"isVerified";
 }
 
 - (void)setVersion:(NSString *)str {
-  [paramValues_ setValue:[[str copy] autorelease]
+  [paramValues_ setValue:[str copy]
                   forKey:kOAuthVersionKey];
 }
 
@@ -924,7 +918,6 @@ static NSString *const kUserEmailIsVerifiedKey    = @"isVerified";
 
 - (void)setTimestamp:(NSString *)str {
   // set a fixed timestamp, for testing only
-  [timestamp_ autorelease];
   timestamp_ = [str copy];
 }
 
@@ -942,7 +935,6 @@ static NSString *const kUserEmailIsVerifiedKey    = @"isVerified";
 
 - (void)setNonce:(NSString *)str {
   // set a fixed nonce, for testing only
-  [nonce_ autorelease];
   nonce_ = [str copy];
 }
 
@@ -974,7 +966,7 @@ static NSString *const kUserEmailIsVerifiedKey    = @"isVerified";
 + (NSString *)encodedOAuthParameterForString:(NSString *)str {
   // http://oauth.net/core/1.0a/#encoding_parameters
   
-  CFStringRef originalString = (CFStringRef) str;
+  CFStringRef originalString = (__bridge CFStringRef)str;
   
   CFStringRef leaveUnescaped = CFSTR("ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                                      "abcdefghijklmnopqrstuvwxyz"
@@ -988,10 +980,9 @@ static NSString *const kUserEmailIsVerifiedKey    = @"isVerified";
                                                          leaveUnescaped,
                                                          forceEscaped,
                                                          kCFStringEncodingUTF8);
-    [(id)CFMakeCollectable(escapedStr) autorelease];
   }
   
-  return (NSString *)escapedStr;
+  return (__bridge_transfer NSString *)escapedStr;
 }
 
 + (NSString *)unencodedOAuthParameterForString:(NSString *)str {
@@ -1031,8 +1022,8 @@ static NSString *const kUserEmailIsVerifiedKey    = @"isVerified";
 }
 
 + (NSDictionary *)dictionaryWithResponseData:(NSData *)data {
-  NSString *responseStr = [[[NSString alloc] initWithData:data
-                                                 encoding:NSUTF8StringEncoding] autorelease];
+  NSString *responseStr = [[NSString alloc] initWithData:data
+                                                 encoding:NSUTF8StringEncoding];
   NSDictionary *dict = [self dictionaryWithResponseString:responseStr];
   return dict;
 }
@@ -1159,8 +1150,8 @@ static NSString *const kUserEmailIsVerifiedKey    = @"isVerified";
     output[idx + 3] = (i + 2) < length ? table[(value >> 0)  & 0x3F] : '=';
   }
   
-  NSString *result = [[[NSString alloc] initWithData:buffer
-                                            encoding:NSASCIIStringEncoding] autorelease];
+  NSString *result = [[NSString alloc] initWithData:buffer
+                                            encoding:NSASCIIStringEncoding];
   return result;
 }
 
@@ -1192,16 +1183,13 @@ static NSString *const kUserEmailIsVerifiedKey    = @"isVerified";
 
 + (OAuthParameter *)parameterWithName:(NSString *)name
                                 value:(NSString *)value {
-  OAuthParameter *obj = [[[self alloc] init] autorelease];
+  OAuthParameter *obj = [[self alloc] init];
   [obj setName:name];
   [obj setValue:value];
   return obj;
 }
 
 - (void)dealloc {
-  [name_ release];
-  [value_ release];
-  [super dealloc];
 }
 
 - (NSString *)encodedValue {
@@ -1237,12 +1225,12 @@ static NSString *const kUserEmailIsVerifiedKey    = @"isVerified";
   SEL sel = @selector(compare:);
   
   NSSortDescriptor *desc1, *desc2;
-  desc1 = [[[NSSortDescriptor alloc] initWithKey:@"name"
+  desc1 = [[NSSortDescriptor alloc] initWithKey:@"name"
                                        ascending:YES
-                                        selector:sel] autorelease];
-  desc2 = [[[NSSortDescriptor alloc] initWithKey:@"encodedValue"
+                                        selector:sel];
+  desc2 = [[NSSortDescriptor alloc] initWithKey:@"encodedValue"
                                        ascending:YES
-                                        selector:sel] autorelease];
+                                        selector:sel];
   
   NSArray *sortDescriptors = [NSArray arrayWithObjects:desc1, desc2, nil];
   return sortDescriptors;
